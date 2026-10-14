@@ -2,7 +2,7 @@
   "schema": 1,
   "courseId": 2084,
   "repository": "LearningOS/2026a-rustling-Skadi521",
-  "commit": "034758c0265ccacfa155543dafb2f60188d9e372",
+  "commit": "eb072e11ddd87ddd1d2d4e94f8436416cff0df8b",
   "score": 108,
   "totalScore": 110,
   "exercises": [
@@ -778,9 +778,9 @@
     }
   ],
   "student": "Skadi521",
-  "runId": "38589792189",
-  "runAttempt": "2",
+  "runId": "38655698225",
+  "runAttempt": "1",
   "upload": {
-    "status": "accepted"
+    "status": "pending"
   }
 }

@@ -2,7 +2,7 @@
 	queue
 	This question requires you to use queues to implement the functionality of the stac
 */
-// I AM NOT DONE
+
 
 #[derive(Debug)]
 pub struct Queue<T> {
@@ -52,31 +52,28 @@ impl<T> Default for Queue<T> {
     }
 }
 
-pub struct myStack<T>
-{
-	//TODO
-	q1:Queue<T>,
-	q2:Queue<T>
+pub fn push(&mut self, elem: T) {
+    self.q1.enqueue(elem);
 }
-impl<T> myStack<T> {
-    pub fn new() -> Self {
-        Self {
-			//TODO
-			q1:Queue::<T>::new(),
-			q2:Queue::<T>::new()
-        }
+
+pub fn pop(&mut self) -> Result<T, &str> {
+    if self.q1.is_empty() {
+        return Err("Stack is empty");
     }
-    pub fn push(&mut self, elem: T) {
-        //TODO
+    // 将 q1 中除最后一个元素外的所有元素移到 q2
+    while self.q1.size() > 1 {
+        let val = self.q1.dequeue()?;
+        self.q2.enqueue(val);
     }
-    pub fn pop(&mut self) -> Result<T, &str> {
-        //TODO
-		Err("Stack is empty")
-    }
-    pub fn is_empty(&self) -> bool {
-		//TODO
-        true
-    }
+    // 此时 q1 中剩下的就是栈顶元素
+    let result = self.q1.dequeue()?;
+    // 交换 q1 和 q2，让 q1 重新拥有剩余元素，q2 为空
+    std::mem::swap(&mut self.q1, &mut self.q2);
+    Ok(result)
+}
+
+pub fn is_empty(&self) -> bool {
+    self.q1.is_empty() && self.q2.is_empty()
 }
 
 #[cfg(test)]

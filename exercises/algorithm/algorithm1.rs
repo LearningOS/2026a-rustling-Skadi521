@@ -2,7 +2,7 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -69,15 +69,77 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+	pub fn merge(list_a: LinkedList<T>, list_b: LinkedList<T>) -> Self
+where
+    T: Ord,
+{
+    let length = list_a.length + list_b.length;
+
+    // 直接取出两个链表的头指针，复用原有节点
+    let mut a = list_a.start;
+    let mut b = list_b.start;
+
+    // 防止原 LinkedList 被 drop（当前没有 Drop impl，但这样写更保险）
+    std::mem::forget(list_a);
+    std::mem::forget(list_b);
+
+    let mut result = LinkedList::new();
+    result.length = length;
+
+    let mut head: Option<NonNull<Node<T>>> = None;
+    let mut tail: Option<NonNull<Node<T>>> = None;
+
+    while a.is_some() || b.is_some() {
+        let next_node = match (a, b) {
+            (Some(pa), Some(pb)) => {
+                let va = unsafe { &(*pa.as_ptr()).val };
+                let vb = unsafe { &(*pb.as_ptr()).val };
+                if va <= vb {
+                    a = unsafe { (*pa.as_ptr()).next };
+                    Some(pa)
+                } else {
+                    b = unsafe { (*pb.as_ptr()).next };
+                    Some(pb)
+                }
+            }
+            (Some(pa), None) => {
+                a = unsafe { (*pa.as_ptr()).next };
+                Some(pa)
+            }
+            (None, Some(pb)) => {
+                b = unsafe { (*pb.as_ptr()).next };
+                Some(pb)
+            }
+            (None, None) => None,
+        };
+
+        if let Some(node) = next_node {
+            match tail {
+                None => {
+                    head = Some(node);
+                    tail = Some(node);
+                }
+                Some(t) => {
+                    unsafe {
+                        (*t.as_ptr()).next = Some(node);
+                    }
+                    tail = Some(node);
+                }
+            }
         }
-	}
+    }
+
+    // 最后一个节点的 next 置空
+    if let Some(t) = tail {
+        unsafe {
+            (*t.as_ptr()).next = None;
+        }
+    }
+
+    result.start = head;
+    result.end = tail;
+    result
+}
 }
 
 impl<T> Display for LinkedList<T>
